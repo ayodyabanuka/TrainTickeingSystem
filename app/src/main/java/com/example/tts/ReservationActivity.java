@@ -1,6 +1,7 @@
 package com.example.tts;
 
 import android.app.DatePickerDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -8,19 +9,17 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.tts.Adapters.TrainFilterAdapter;
-import com.example.tts.Adapters.ReservationAdapter;
 import com.example.tts.Model.StationTrains;
 import com.example.tts.Model.StationsList;
 import com.example.tts.Model.Train;
 import com.example.tts.Utils.ApiClient;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
@@ -30,13 +29,11 @@ import retrofit2.Response;
 
 public class ReservationActivity extends AppCompatActivity {
 
-    Button date;
+    Button date,next;
     int trainID;
-    String dateString,startStation,endStation;
+    String dateString,startStation,endStation,trains;
     Calendar maxDate;
 
-    RecyclerView recyclerView;
-    TrainFilterAdapter adapter;
 
 
     @Override
@@ -48,10 +45,22 @@ public class ReservationActivity extends AppCompatActivity {
 
         Spinner start = (Spinner) findViewById(R.id.startStation);
         Spinner end = (Spinner) findViewById(R.id.endStation);
+        Spinner trainspinners = (Spinner) findViewById(R.id.trainsspinner);
         date = findViewById(R.id.date);
+        next = findViewById(R.id.next);
 
-        recyclerView = findViewById(R.id.trainlist);
-        recyclerView.setLayoutManager(new LinearLayoutManager(ReservationActivity.this));
+        next.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(ReservationActivity.this, BookingSummaryActivity.class);
+                intent.putExtra("trainId",String.valueOf(trainID));
+                intent.putExtra("startStation",startStation);
+                intent.putExtra("endStation",endStation);
+                intent.putExtra("date",dateString);
+                startActivity(intent);
+            }
+        });
+
 
         // perform click event on edit text
         date.setOnClickListener(new View.OnClickListener() {
@@ -104,28 +113,45 @@ public class ReservationActivity extends AppCompatActivity {
                             stationTrains.setStartStation(startStation);
                             stationTrains.setEndStation(endStation);
 
-                            Call<List<Train>> trainsfilter = ApiClient.getTrainService().GetTrainsByStations(stationTrains);
-                            trainsfilter.enqueue(new Callback<List<Train>>() {
+                            Call<List<Train>> call = ApiClient.getTrainService().GetTrainsByStations(stationTrains);
+
+                            call.enqueue(new Callback<List<Train>>() {
                                 @Override
-                                public void onResponse(Call<List<Train>>call, Response<List<Train>> response) {
+                                public void onResponse(Call<List<Train>> call, Response<List<Train>> response) {
+                                    if (response.isSuccessful()) {
+                                        List<Train> trainList = response.body();
 
-                                    if(response.isSuccessful()){
+                                        // Populate Spinner with train names
+                                        List<String> trainNames = new ArrayList<>();
+                                        for (Train train : trainList) {
+                                            trainNames.add(train.getName());
+                                        }
 
-                                        List<Train> trains = response.body();
+                                        ArrayAdapter<String> adapter = new ArrayAdapter<>(ReservationActivity.this, android.R.layout.simple_spinner_item, trainNames);
+                                        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                                        trainspinners.setAdapter(adapter);
+                                        trainspinners.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                                            @Override
+                                            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
-                                        adapter = new TrainFilterAdapter(ReservationActivity.this,trains);
-                                        recyclerView.setAdapter(adapter);
+                                                trainID = trainList.get(position).getTrainNo();
 
+                                            }
+
+                                            @Override
+                                            public void onNothingSelected(AdapterView<?> parent) {
+                                                // Handle no selection if needed
+                                            }
+                                        });
                                     }
-
                                 }
 
                                 @Override
                                 public void onFailure(Call<List<Train>> call, Throwable t) {
-                                    Toast.makeText(ReservationActivity.this,"Throwable "+t.getLocalizedMessage(), Toast.LENGTH_LONG).show();
-
+                                    // Handle failure (e.g., show an error message)
                                 }
                             });
+
 
                         }
 

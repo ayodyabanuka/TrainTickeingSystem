@@ -60,8 +60,6 @@
         android:layout_height="50dp"
         android:layout_marginBottom="2dp"/>
 
-
-
     <TextView
 
         android:layout_width="wrap_content"
@@ -72,11 +70,23 @@
         android:layout_marginTop="20dp"
         android:text="Trains"/>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/trainlist"
+    <Spinner
+        android:id="@+id/trainsspinner"
+        android:layout_width="fill_parent"
+        android:layout_height="50dp"
+        android:layout_marginBottom="2dp"/>
+
+    <Button
+        android:id="@+id/next"
         android:layout_width="match_parent"
-        android:layout_height="352dp"
-        android:layout_marginTop="10dp" />
+        android:layout_height="wrap_content"
+        android:backgroundTint="#000000"
+        android:layout_marginBottom="10dp"
+        android:textColor="@color/white"
+        android:textColorHint="@color/white"
+        android:hint="Next"></Button>
+
+
 
 
 </LinearLayout>

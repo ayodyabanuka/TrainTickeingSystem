@@ -7,6 +7,8 @@ public class Reservation {
     Client client;
     Train train;
 
+    Stations startStation,endStation;
+
     String date;
 
     public Reservation() {
@@ -42,6 +44,22 @@ public class Reservation {
 
     public void setTrain(Train train) {
         this.train = train;
+    }
+
+    public Stations getStartStation() {
+        return startStation;
+    }
+
+    public void setStartStation(Stations startStation) {
+        this.startStation = startStation;
+    }
+
+    public Stations getEndStation() {
+        return endStation;
+    }
+
+    public void setEndStation(Stations endStation) {
+        this.endStation = endStation;
     }
 
     public String getDate() {

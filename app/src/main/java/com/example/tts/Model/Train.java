@@ -5,7 +5,6 @@ import java.util.List;
 
 public class Train {
     String id;
-
     int trainNo;
     String name;
     List<String> date;

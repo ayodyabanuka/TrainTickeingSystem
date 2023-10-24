@@ -2,6 +2,7 @@ package com.example.tts.Interface;
 
 
 import com.example.tts.Model.Reservation;
+import com.example.tts.Model.ReservationReqest;
 import com.example.tts.Model.StationTrains;
 import com.example.tts.Model.StationsList;
 import com.example.tts.Model.Train;
@@ -23,9 +24,9 @@ public interface TrainService {
     @GET("train/stationlist")
     Call <StationsList> TrainsList();
 
-    @GET("train/{trainId}")
-    Call<Train>getTrainById(@Path("trainNo") int trainId);
+    @GET("train/{trainNo}")
+    Call<Train>getTrainById(@Path("trainNo") int trainNo);
 
     @POST("train/filter")
-    Call<List<Train>> GetTrainsByStations(@Body StationTrains stationTrains);
+    Call <List<Train>> GetTrainsByStations(@Body StationTrains stationTrains);
 }
